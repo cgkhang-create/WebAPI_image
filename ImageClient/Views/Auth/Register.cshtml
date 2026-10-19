@@ -1,0 +1,73 @@
+﻿@{
+    ViewData["Title"] = "Đăng ký";
+}
+
+<div class="container mt-5" style="max-width: 450px;">
+    <h2 class="text-center mb-4">Đăng ký tài khoản</h2>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">
+            @ViewBag.Error
+        </div>
+    }
+
+    @if (ViewBag.Success != null)
+    {
+        <div class="alert alert-success">
+            @ViewBag.Success
+        </div>
+    }
+
+    <form asp-controller="Auth"
+          asp-action="Register"
+          method="post">
+
+        @Html.AntiForgeryToken()
+
+        <div class="mb-3">
+            <label for="username" class="form-label">Email</label>
+            <input id="username"
+                   name="username"
+                   type="email"
+                   class="form-control"
+                   autocomplete="email"
+                   required />
+        </div>
+
+        <div class="mb-3">
+            <label for="password" class="form-label">Mật khẩu</label>
+            <input id="password"
+                   name="password"
+                   type="password"
+                   class="form-control"
+                   minlength="6"
+                   autocomplete="new-password"
+                   required />
+        </div>
+
+        <div class="mb-3">
+            <label for="confirmPassword" class="form-label">
+                Xác nhận mật khẩu
+            </label>
+            <input id="confirmPassword"
+                   name="confirmPassword"
+                   type="password"
+                   class="form-control"
+                   minlength="6"
+                   autocomplete="new-password"
+                   required />
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">
+            Đăng ký
+        </button>
+
+        <div class="text-center mt-3">
+            Đã có tài khoản?
+            <a asp-controller="Auth" asp-action="Login">
+                Đăng nhập
+            </a>
+        </div>
+    </form>
+</div>

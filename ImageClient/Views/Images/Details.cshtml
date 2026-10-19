@@ -1,0 +1,77 @@
+﻿@model ImageClient.Models.DTO.ImageDTO
+
+@{
+    ViewData["Title"] = "Chi tiết ảnh";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Chi tiết ảnh</h4>
+                    <a asp-action="Index" class="btn btn-light btn-sm">← Quay lại</a>
+                </div>
+
+                <div class="card-body text-center">
+                    <!-- Ảnh lớn -->
+                    <img src="@Url.Action("Preview", "Images", new { id = Model.Id })"
+                         class="img-fluid rounded mb-4"
+                         style="max-height: 450px; object-fit: contain;"
+                         alt="@Model.FileName"
+                         onerror="this.src='https://via.placeholder.com/400x300?text=Không+tải+được+ảnh';" />
+
+                    <!-- Thông tin -->
+                    <table class="table table-bordered table-striped text-start">
+                        <tr>
+                            <th style="width: 160px;">Tên file</th>
+                            <td>@Model.FileName</td>
+                        </tr>
+                        <tr>
+                            <th>Tác giả</th>
+                            <td>
+                                <span class="badge bg-info text-dark fs-6">
+                                    @(string.IsNullOrEmpty(Model.UploadedBy) ? "Không rõ" : Model.UploadedBy)
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Mô tả</th>
+                            <td>@(Model.FileDescription ?? "Không có mô tả")</td>
+                        </tr>
+                        <tr>
+                            <th>Định dạng</th>
+                            <td>@Model.FileExtension</td>
+                        </tr>
+                        <tr>
+                            <th>Kích thước</th>
+                            <td>
+                                @{
+                                    double sizeKB = Model.FileSizeInBytes / 1024.0;
+                                    string sizeText = sizeKB >= 1024
+                                        ? string.Format("{0:F2} MB", sizeKB / 1024.0)
+                                        : string.Format("{0:F2} KB", sizeKB);
+                                }
+                                @sizeText
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Ngày đăng</th>
+                            <td>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="card-footer d-flex justify-content-between">
+                    <a asp-action="Download" asp-route-id="@Model.Id" class="btn btn-success">
+                        Tải xuống
+                    </a>
+
+                    <div>
+                        <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

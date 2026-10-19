@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="ImageClient/ImageClient.csproj" />
+  <Project Path="WebAPI_image/WebAPI_image.csproj" />
+</Solution>

@@ -1,0 +1,132 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - ImageClient</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+
+<body>
+    @{
+        var isLoggedIn =
+            !string.IsNullOrEmpty(Context.Session.GetString("JWToken"));
+    }
+
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom shadow-sm mb-3">
+            <div class="container-fluid">
+
+                <a class="navbar-brand"
+                   asp-controller="Images"
+                   asp-action="Index">
+                    Image Client
+                </a>
+
+                <button class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#mainNavbar"
+                        aria-controls="mainNavbar"
+                        aria-expanded="false"
+                        aria-label="Mở menu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    <ul class="navbar-nav me-auto">
+
+                        @if (isLoggedIn)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   asp-controller="Images"
+                                   asp-action="Index">
+                                    Quản lý ảnh
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   asp-controller="Images"
+                                   asp-action="Upload">
+                                    Upload
+                                </a>
+                            </li>
+
+                            <!-- ===== MENU YÊU THÍCH ===== -->
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   asp-controller="Images"
+                                   asp-action="Favorites">
+                                    ♥ Yêu thích
+                                </a>
+                            </li>
+                        }
+
+                    </ul>
+
+                    <ul class="navbar-nav ms-auto">
+                        @if (isLoggedIn)
+                        {
+                            <li class="nav-item">
+                                <form asp-controller="Auth"
+                                      asp-action="Logout"
+                                      method="post"
+                                      class="d-inline">
+                                    @Html.AntiForgeryToken()
+
+                                    <button type="submit"
+                                            class="btn btn-outline-danger btn-sm mt-1">
+                                        Đăng xuất
+                                    </button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   asp-controller="Auth"
+                                   asp-action="Login">
+                                    Đăng nhập
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"
+                                   asp-controller="Auth"
+                                   asp-action="Register">
+                                    Đăng ký
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container py-3">
+            &copy; 2026 - ImageClient
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,103 @@
+﻿@model List<ImageClient.Models.DTO.ImageDTO>
+
+@{
+    ViewData["Title"] = "Ảnh yêu thích";
+}
+
+<div class="container mt-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>♥ Ảnh yêu thích</h2>
+        <a asp-action="Index" class="btn btn-outline-primary">← Danh sách ảnh</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Tên file</th>
+                    <th>Mô tả</th>
+                    <th>Loại</th>
+                    <th>Tác giả</th>
+                    <th>Xem trước</th>
+                    <th style="min-width: 220px;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count > 0)
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Id</td>
+                            <td>@item.FileName</td>
+                            <td>@(item.FileDescription ?? "")</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.CategoryName))
+                                {
+                                    <span class="badge bg-secondary">@item.CategoryName</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Chưa phân loại</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="badge bg-info text-dark">
+                                    @(string.IsNullOrEmpty(item.UploadedBy) ? "Không rõ" : item.UploadedBy)
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <a asp-action="Details" asp-route-id="@item.Id">
+                                    <img src="@Url.Action("Preview", "Images", new { id = item.Id })"
+                                         class="img-thumbnail"
+                                         style="width:120px;height:80px;object-fit:contain;cursor:pointer;"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';" />
+                                </a>
+                                <span style="display:none;color:red;font-size:0.85rem;">Không tải được</span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <a asp-action="Download" asp-route-id="@item.Id"
+                                       class="btn btn-success btn-sm">Tải xuống</a>
+
+                                    <!-- Bỏ yêu thích -->
+                                    <form asp-action="ToggleFavorite" asp-route-id="@item.Id"
+                                          method="post" class="m-0">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-outline-danger btn-sm"
+                                                onclick="return confirm('Bỏ yêu thích ảnh này?')">
+                                            Bỏ ♥
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            Bạn chưa có ảnh yêu thích nào.<br />
+                            <a asp-action="Index" class="btn btn-primary btn-sm mt-2">Xem danh sách ảnh</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

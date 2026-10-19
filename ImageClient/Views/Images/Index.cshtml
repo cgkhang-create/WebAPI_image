@@ -1,0 +1,147 @@
+﻿@model List<ImageClient.Models.DTO.ImageDTO>
+
+@{
+    var categories = ViewBag.Categories as List<ImageClient.Models.DTO.CategoryDTO>
+                     ?? new List<ImageClient.Models.DTO.CategoryDTO>();
+    int? selectedCategoryId = ViewBag.SelectedCategoryId as int?;
+}
+
+<div class="container mt-3">
+    <h2>Danh sách ảnh</h2>
+
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div class="d-flex gap-2">
+            <a asp-action="Upload" class="btn btn-primary">Upload ảnh mới</a>
+            <a asp-action="Favorites" class="btn btn-warning">♥ Yêu thích</a>
+        </div>
+
+        <!-- Bộ lọc phân loại -->
+        <form method="get" asp-action="Index" class="d-flex gap-2">
+            <select name="categoryId" class="form-select" style="width: 200px;"
+                    onchange="this.form.submit()">
+                <option value="">-- Tất cả loại --</option>
+                @foreach (var cat in categories)
+                {
+                    if (selectedCategoryId == cat.Id)
+                    {
+                        <option value="@cat.Id" selected>@cat.Name</option>
+                    }
+                    else
+                    {
+                        <option value="@cat.Id">@cat.Name</option>
+                    }
+                }
+            </select>
+        </form>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Tên file</th>
+                    <th>Mô tả</th>
+                    <th>Loại</th>
+                    <th>Định dạng</th>
+                    <th>Kích thước</th>
+                    <th>Tác giả</th>
+                    <th>Xem trước</th>
+                    <th style="min-width:220px;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count > 0)
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Id</td>
+                            <td>@item.FileName</td>
+                            <td>@(item.FileDescription ?? "")</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.CategoryName))
+                                {
+                                    <span class="badge bg-secondary">@item.CategoryName</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Chưa phân loại</span>
+                                }
+                            </td>
+                            <td>@item.FileExtension</td>
+                            <td>
+                                @{
+                                    double sizeKB = item.FileSizeInBytes / 1024.0;
+                                    string sizeText = sizeKB >= 1024
+                                        ? string.Format("{0:F2} MB", sizeKB / 1024.0)
+                                        : string.Format("{0:F2} KB", sizeKB);
+                                }
+                                @sizeText
+                            </td>
+                            <td>
+                                <span class="badge bg-info text-dark">
+                                    @(string.IsNullOrEmpty(item.UploadedBy) ? "Không rõ" : item.UploadedBy)
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <a asp-action="Details" asp-route-id="@item.Id">
+                                    <img src="@Url.Action("Preview", "Images", new { id = item.Id })"
+                                         class="img-thumbnail"
+                                         style="width:120px;height:80px;object-fit:contain;cursor:pointer;"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';" />
+                                </a>
+                                <span style="display:none;color:red;font-size:0.85rem;">Không tải được ảnh</span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <!-- Tải xuống -->
+                                    <a asp-action="Download" asp-route-id="@item.Id"
+                                       class="btn btn-success btn-sm">Tải xuống</a>
+
+                                    <!-- Yêu thích (form riêng) -->
+                                    <form asp-action="ToggleFavorite" asp-route-id="@item.Id"
+                                          method="post" class="m-0">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-warning btn-sm" title="Yêu thích">
+                                            ♥
+                                        </button>
+                                    </form>
+
+                                    <!-- Xóa (form riêng) -->
+                                    <form asp-action="Delete" asp-route-id="@item.Id"
+                                          method="post" class="m-0">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger btn-sm"
+                                                onclick="return confirm('Bạn có chắc muốn xóa?')">
+                                            Xóa
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="9" class="text-center text-muted">Chưa có ảnh nào.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
